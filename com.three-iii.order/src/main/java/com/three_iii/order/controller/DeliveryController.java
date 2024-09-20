@@ -7,6 +7,7 @@ import com.three_iii.order.domain.DeliveryStatusEnum;
 import com.three_iii.order.domain.UserPrincipal;
 import com.three_iii.order.exception.Response;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,9 +31,9 @@ public class DeliveryController {
     // 배송 전체조회
     @GetMapping
     public Response<Page<DeliveryResponseDto>> findAllDelivery(
-        @RequestParam(required = false) String keyword,
-        Pageable pageable) {
-        return Response.success(deliveryService.findAllDelivery(keyword, pageable));
+        @RequestParam(required = false) String keyword, Pageable pageable,
+        @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return Response.success(deliveryService.findAllDelivery(keyword, pageable, userPrincipal));
     }
 
     // 배송 단건 조회
@@ -63,5 +64,11 @@ public class DeliveryController {
         DeliveryResponseDto responseDto = DeliveryResponseDto.from(delivery);
 
         return Response.success(responseDto);
+    }
+
+    // 스케줄러용 호출 api
+    @GetMapping("/days")
+    public List<DeliveryResponseDto> findAllDeliveryBetweenTime() {
+        return deliveryService.findAllDeliveryBetweenTime();
     }
 }
